@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Speak Up — thinking on your feet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#101715;
+    --bg-soft:#161f1c;
+    --card:#1a2420;
+    --line:#2a3733;
+    --ink:#e9efe9;
+    --ink-dim:#93a49c;
+    --amber:#e2a25a;
+    --amber-dim:#8a6a3e;
+    --teal:#5f8f84;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, #1c2a25 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px;
+  }
+  .app{
+    width:100%;
+    max-width:560px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    text-align:center;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(28px,6vw,40px);
+    text-align:center;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{
+    text-align:center;
+    color:var(--ink-dim);
+    font-size:14.5px;
+    margin-bottom:34px;
+  }
+
+  /* mode toggle */
+  .modes{
+    display:flex;
+    gap:8px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:4px;
+    margin-bottom:30px;
+  }
+  .modes button{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:var(--ink-dim);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    padding:10px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all .25s ease;
+  }
+  .modes button.active{
+    background:var(--amber);
+    color:#1a1208;
+  }
+
+  /* dial */
+  .dial-wrap{
+    position:relative;
+    width:260px;
+    height:260px;
+    margin:0 auto 28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dial{
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:
+      repeating-conic-gradient(from 0deg, var(--card) 0deg 10deg, #182420 10deg 20deg);
+    border:1px solid var(--line);
+    position:relative;
+    transition:transform 3.2s cubic-bezier(.15,.75,.1,1);
+    box-shadow:0 0 0 8px var(--bg-soft), inset 0 0 40px rgba(0,0,0,.45);
+  }
+  .dial::after{
+    content:"";
+    position:absolute;
+    inset:38%;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #24322c, #131a17 70%);
+    border:1px solid var(--line);
+  }
+  .needle{
+    position:absolute;
+    top:-6px;
+    left:50%;
+    width:2px;
+    height:24px;
+    background:var(--amber);
+    transform:translateX(-50%);
+    filter:drop-shadow(0 0 6px rgba(226,162,90,.6));
+  }
+  .spin-btn{
+    position:absolute;
+    width:78px;
+    height:78px;
+    border-radius:50%;
+    border:1px solid var(--amber-dim);
+    background:var(--bg-soft);
+    color:var(--amber);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    cursor:pointer;
+    z-index:2;
+    transition:transform .15s ease, background .2s ease;
+  }
+  .spin-btn:hover{background:#20302a;}
+  .spin-btn:active{transform:scale(0.94);}
+  .spin-btn:disabled{opacity:.5;cursor:default;}
+
+  /* topic card */
+  .topic-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:26px 24px;
+    min-height:104px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    margin-bottom:22px;
+  }
+  .topic-text{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:20px;
+    line-height:1.4;
+    color:var(--ink);
+  }
+  .topic-text.placeholder{
+    color:var(--ink-dim);
+    font-family:'Inter',sans-serif;
+    font-weight:400;
+    font-size:14.5px;
+  }
+
+  /* timer row */
+  .timer-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:16px 20px;
+  }
+  .clock{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:30px;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+    min-width:84px;
+  }
+  .clock.low{color:#e07a5f;}
+  .timer-controls{
+    display:flex;
+    gap:8px;
+  }
+  .timer-controls button{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink);
+    padding:9px 14px;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .timer-controls button.primary{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#0d1513;
+  }
+  .timer-controls button:hover{border-color:var(--amber-dim);}
+  .timer-controls button:disabled{opacity:.4;cursor:default;}
+
+  .duration-picker{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:16px;
+  }
+  .duration-picker button{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-dim);
+    padding:6px 12px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .duration-picker button.active{
+    border-color:var(--amber);
+    color:var(--amber);
+  }
+
+  footer{
+    text-align:center;
+    margin-top:26px;
+    font-size:12px;
+    color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .dial{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="eyebrow">Speaking practice</div>
+  <h1>Spin. Then speak.</h1>
+  <div class="sub">Pick a mode, spin the dial, and talk before the clock runs out.</div>
+
+  <div class="modes">
+    <button class="active" data-mode="cuff">Off the Cuff</button>
+    <button data-mode="deep">Deep Research</button>
+  </div>
+
+  <div class="dial-wrap">
+    <div class="needle"></div>
+    <div class="dial" id="dial"></div>
+    <button class="spin-btn" id="spinBtn">Spin</button>
+  </div>
+
+  <div class="topic-card">
+    <div class="topic-text placeholder" id="topicText">Your topic will land here</div>
+  </div>
+
+  <div class="timer-row">
+    <div class="clock" id="clock">01:00</div>
+    <div class="timer-controls">
+      <button id="startBtn" class="primary" disabled>Start</button>
+      <button id="resetBtn" disabled>Reset</button>
+    </div>
+  </div>
+
+  <div class="duration-picker">
+    <button data-secs="30">30s</button>
+    <button data-secs="60" class="active">60s</button>
+    <button data-secs="120">2m</button>
+    <button data-secs="180">3m</button>
+  </div>
+
+  <footer>no recording, no accounts — just you and the clock</footer>
+</div>
+
+<script>
+  const topics = {
+    cuff: [
+      "The best meal you've ever eaten, and why it beat every other contender",
+      "A rule you'd abolish if you ran the world for a day",
+      "The most useful thing you own that cost less than $20",
+      "A skill you wish schools actually taught",
+      "The last time you changed your mind about something",
+      "A place you've never been but feel like you already know",
+      "Something you believed as a kid that turned out to be wrong",
+      "The most underrated everyday object",
+      "A tradition you'd start if you could",
+      "The best advice you've ever ignored",
+      "A smell that instantly takes you somewhere",
+      "Something you're weirdly good at",
+      "The last thing that made you laugh out loud",
+      "A habit you're trying to build right now",
+      "The most interesting person you've met by accident"
+    ],
+    deep: [
+      "Should cities charge people to drive downtown during rush hour?",
+      "Is remote work making us better or worse colleagues?",
+      "Does social media make political disagreement healthier or more toxic?",
+      "Should there be a maximum wage as well as a minimum one?",
+      "Is standardized testing a fair way to measure ability?",
+      "Should companies be required to disclose how their algorithms work?",
+      "Is space exploration a good use of public money right now?",
+      "Should voting be mandatory?",
+      "Does economic growth still make sense as a national goal?",
+      "Is a four-day work week realistic for most industries?",
+      "Should artificial intelligence be regulated like a public utility?",
+      "Is nuclear energy the most practical path to net zero?",
+      "Should inheritance be taxed more heavily than income?",
+      "Is it ethical to bring back extinct species?",
+      "Should platforms be responsible for the content they recommend?"
+    ]
+  };
+
+  let mode = "cuff";
+  let currentTopic = null;
+  let duration = 60;
+  let remaining = 60;
+  let timerId = null;
+  let running = false;
+
+  const dial = document.getElementById('dial');
+  const spinBtn = document.getElementById('spinBtn');
+  const topicText = document.getElementById('topicText');
+  const clock = document.getElementById('clock');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const modeButtons = document.querySelectorAll('.modes button');
+  const durationButtons = document.querySelectorAll('.duration-picker button');
+
+  let rotation = 0;
+
+  function formatTime(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    return `${m}:${sec}`;
+  }
+
+  function updateClockDisplay(){
+    clock.textContent = formatTime(remaining);
+    clock.classList.toggle('low', remaining <= 10 && remaining > 0);
+  }
+
+  function resetTimerState(){
+    clearInterval(timerId);
+    running = false;
+    remaining = duration;
+    updateClockDisplay();
+    startBtn.textContent = 'Start';
+    startBtn.disabled = !currentTopic;
+    resetBtn.disabled = true;
+  }
+
+  modeButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      modeButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      currentTopic = null;
+      topicText.textContent = "Your topic will land here";
+      topicText.classList.add('placeholder');
+      resetTimerState();
+      startBtn.disabled = true;
+    });
+  });
+
+  durationButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      durationButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      duration = parseInt(btn.dataset.secs, 10);
+      resetTimerState();
+    });
+  });
+
+  spinBtn.addEventListener('click', ()=>{
+    if(spinBtn.disabled) return;
+    spinBtn.disabled = true;
+    resetTimerState();
+    startBtn.disabled = true;
+
+    const list = topics[mode];
+    const pick = list[Math.floor(Math.random()*list.length)];
+
+    rotation += 1080 + Math.floor(Math.random()*360);
+    dial.style.transform = `rotate(${rotation}deg)`;
+
+    topicText.classList.add('placeholder');
+    topicText.textContent = "Spinning…";
+
+    setTimeout(()=>{
+      currentTopic = pick;
+      topicText.textContent = pick;
+      topicText.classList.remove('placeholder');
+      spinBtn.disabled = false;
+      startBtn.disabled = false;
+    }, 3200);
+  });
+
+  startBtn.addEventListener('click', ()=>{
+    if(running){
+      // pause
+      clearInterval(timerId);
+      running = false;
+      startBtn.textContent = 'Resume';
+      return;
+    }
+    running = true;
+    startBtn.textContent = 'Pause';
+    resetBtn.disabled = false;
+    timerId = setInterval(()=>{
+      remaining -= 1;
+      updateClockDisplay();
+      if(remaining <= 0){
+        clearInterval(timerId);
+        running = false;
+        startBtn.textContent = 'Start';
+        startBtn.disabled = true;
+        clock.classList.add('low');
+      }
+    }, 1000);
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    resetTimerState();
+    startBtn.disabled = !currentTopic;
+  });
+
+  updateClockDisplay();
+</script>
+</body>
+</html>
