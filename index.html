@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Speak Up — thinking on your feet</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <div class="eyebrow">Speaking practice</div>
+  <h1>Spin. Then speak.</h1>
+  <div class="sub">Pick a mode, spin the dial, and talk before the clock runs out.</div>
+
+  <div class="modes">
+    <button class="active" data-mode="cuff">Off the Cuff</button>
+    <button data-mode="deep">Deep Research</button>
+  </div>
+
+  <div class="dial-wrap">
+    <div class="needle"></div>
+    <div class="dial" id="dial"></div>
+    <button class="spin-btn" id="spinBtn">Spin</button>
+  </div>
+
+  <div class="topic-card">
+    <div class="topic-text placeholder" id="topicText">Your topic will land here</div>
+  </div>
+
+  <div class="timer-row">
+    <div class="clock" id="clock">01:00</div>
+    <div class="timer-controls">
+      <button id="startBtn" class="primary" disabled>Start</button>
+      <button id="resetBtn" disabled>Reset</button>
+    </div>
+  </div>
+
+  <div class="duration-picker">
+    <button data-secs="30">30s</button>
+    <button data-secs="60" class="active">60s</button>
+    <button data-secs="120">2m</button>
+    <button data-secs="180">3m</button>
+  </div>
+
+  <footer>no recording, no accounts — just you and the clock</footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
